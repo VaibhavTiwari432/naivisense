@@ -1,7 +1,7 @@
 import uuid
 import enum
 from datetime import datetime
-from sqlalchemy import Column, String, Boolean, DateTime, Enum
+from sqlalchemy import Column, String, Boolean, DateTime
 from app.core.database import Base
 
 
@@ -15,7 +15,7 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    role = Column(Enum(UserRole), nullable=False)
+    role = Column(String(20), nullable=False)
     phone = Column(String(15), unique=True, nullable=False, index=True)
     email = Column(String(255), unique=True, nullable=True)
     password_hash = Column(String(255), nullable=False)

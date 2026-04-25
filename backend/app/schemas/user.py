@@ -1,7 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime
-from uuid import UUID
 
 
 class UserBase(BaseModel):
@@ -21,9 +20,9 @@ class UserLogin(BaseModel):
 
 
 class UserResponse(UserBase):
-    id: UUID
+    id: str
     is_verified: bool
-    created_at: datetime
+    created_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
