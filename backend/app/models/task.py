@@ -1,7 +1,7 @@
 import uuid
 import enum
 from datetime import datetime
-from sqlalchemy import Column, String, Text, DateTime, ForeignKey, Enum, Boolean
+from sqlalchemy import Column, String, Text, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -20,7 +20,7 @@ class Task(Base):
     assigned_by = Column(String(36), ForeignKey("users.id"), nullable=False)
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
-    status = Column(Enum(TaskStatus), default=TaskStatus.PENDING)
+    status = Column(String(20), default=TaskStatus.PENDING)
     is_home_task = Column(Boolean, default=False)
     due_date = Column(DateTime, nullable=True)
     completed_at = Column(DateTime, nullable=True)

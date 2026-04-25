@@ -138,7 +138,7 @@ async def generate_report(
         .all()
     )
 
-    completed = sum(1 for s in sessions if s.status.value == "completed")
+    completed = sum(1 for s in sessions if s.status == "completed")
 
     score_fields = [
         "attention_score", "participation_score",

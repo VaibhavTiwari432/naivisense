@@ -1,7 +1,7 @@
 import uuid
 import enum
 from datetime import datetime
-from sqlalchemy import Column, String, Text, DateTime, ForeignKey, Enum, Boolean
+from sqlalchemy import Column, String, Text, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -18,7 +18,7 @@ class Alert(Base):
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
-    alert_type = Column(Enum(AlertType), nullable=False)
+    alert_type = Column(String(50), nullable=False)
     title = Column(String(255), nullable=False)
     message = Column(Text, nullable=True)
     is_read = Column(Boolean, default=False)

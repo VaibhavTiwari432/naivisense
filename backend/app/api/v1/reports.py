@@ -46,7 +46,7 @@ async def get_progress_report(
             values = [getattr(n, field) for n in notes if getattr(n, field) is not None]
             avg_scores[field] = round(sum(values) / len(values), 2) if values else None
 
-    sessions_completed = sum(1 for s in sessions if s.status.value == "completed")
+    sessions_completed = sum(1 for s in sessions if s.status == "completed")
     sessions_scheduled = len(sessions)
     attendance_percent = round(sessions_completed / sessions_scheduled * 100) if sessions_scheduled > 0 else 0
 

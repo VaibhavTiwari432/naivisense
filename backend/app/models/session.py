@@ -1,7 +1,7 @@
 import uuid
 import enum
 from datetime import datetime
-from sqlalchemy import Column, String, DateTime, ForeignKey, Enum, Integer
+from sqlalchemy import Column, String, DateTime, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -21,7 +21,7 @@ class Session(Base):
     therapist_id = Column(String(36), ForeignKey("users.id"), nullable=False)
     scheduled_at = Column(DateTime, nullable=False)
     duration_minutes = Column(Integer, default=60)
-    status = Column(Enum(SessionStatus), default=SessionStatus.SCHEDULED)
+    status = Column(String(20), default=SessionStatus.SCHEDULED)
     session_type = Column(String(100), nullable=True)
     location = Column(String(255), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
