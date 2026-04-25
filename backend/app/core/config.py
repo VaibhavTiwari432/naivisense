@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     # Comma-separated list of allowed CORS origins; "*" for local dev
     CORS_ORIGINS: str = "*"
     LOG_LEVEL: str = "INFO"
+    ANTHROPIC_API_KEY: str = ""
 
     @property
     def cors_origins_list(self) -> list[str]:

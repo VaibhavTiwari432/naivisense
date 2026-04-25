@@ -48,7 +48,8 @@
       "Bash(flutter doctor *)",
       "Bash(flutter sdk-path *)",
       "Bash(ls \"$\\(flutter sdk-path \\)/bin/cache/artifacts/engine\")",
-      "Bash(flutter --version)"
+      "Bash(flutter --version)",
+      "Bash(venv/Scripts/pytest tests/test_intelligence.py -v)"
     ]
   }
 }

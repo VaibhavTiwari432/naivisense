@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from app.core.limiter import limiter
-from app.api.v1 import auth, therapist, children, sessions, feedback, tasks, reports
+from app.api.v1 import auth, therapist, children, sessions, feedback, tasks, reports, intelligence
 from app.core.config import settings
 from app.core.database import Base, engine
 
@@ -61,6 +61,7 @@ app.include_router(sessions.router, prefix="/api/v1/sessions", tags=["Sessions"]
 app.include_router(feedback.router, prefix="/api/v1/feedback", tags=["Feedback"])
 app.include_router(tasks.router, prefix="/api/v1/tasks", tags=["Tasks"])
 app.include_router(reports.router, prefix="/api/v1/reports", tags=["Reports"])
+app.include_router(intelligence.router, prefix="/api/v1/intelligence", tags=["Intelligence"])
 
 
 @app.get("/")

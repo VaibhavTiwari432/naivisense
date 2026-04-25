@@ -1,24 +1,24 @@
 # NaiviSense Development Tracker
 
-**Last Updated:** April 25, 2026 — Industry Standards Applied ✅  
-**Overall Progress:** 97% Complete  
+**Last Updated:** April 25, 2026 — Intelligence Layer Complete ✅  
+**Overall Progress:** 99% Complete  
 **Backend:** Running on http://localhost:8000 (SQLite dev / PostgreSQL prod)  
 **Flutter:** ✅ Zero analysis issues — 20 widget tests passing  
-**Backend Tests:** ✅ 36/36 passing
+**Backend Tests:** ✅ 49/49 passing
 
 ---
 
 ## Visual Progress
 
 ```
-OVERALL:  [███████████████████░] 97%
+OVERALL:  [███████████████████░] 99%
 
 Phase 1: Foundation         [████████████████████] 100% ✅
 Phase 2: Frontend UI        [████████████████████] 100% ✅
 Phase 3: Backend Core       [████████████████████] 100% ✅
 Phase 4: API Development    [████████████████████] 100% ✅
 Phase 5: Integration        [████████████████████] 100% ✅
-Phase 6: Intelligence (AI)  [░░░░░░░░░░░░░░░░░░░░]   0% ⏸️ (post-MVP)
+Phase 6: Intelligence (AI)  [████████████████████] 100% ✅ NEW
 Phase 7: Testing            [████████████████████] 100% ✅
 Phase 8: Deployment         [█████████████████░░░]  85% ← IN PROGRESS
 Phase 9: Industry Standards [████████████████████] 100% ✅ NEW
@@ -29,7 +29,7 @@ Phase 9: Industry Standards [█████████████████
 ## 👉 Current Task Pointer
 
 ```
-NEXT: DEPLOY-001 → DEPLOY-004
+NEXT: DEPLOY-001 → DEPLOY-004  (Intelligence layer is complete — set ANTHROPIC_API_KEY in Render for AI features)
   1. Push to GitHub:
        git remote add origin https://github.com/YOUR_USERNAME/naivisense.git
        git push -u origin main
@@ -225,14 +225,79 @@ Infrastructure:
 
 ---
 
-## Phase 6 — Intelligence Layer (post-MVP)
+## Phase 6 — Intelligence Layer ✅ COMPLETE (April 25, 2026)
 
-| ID | Task | Notes |
-|---|---|---|
-| AI-001 | Skill scoring algorithm | Based on session notes 1-5 scores |
-| AI-002 | Auto-tagging therapy targets | NLP on therapist observations |
-| AI-003 | Therapist-child matching engine | Specialization + availability + outcomes |
-| AI-004 | Automated report generator | Aggregate weekly/monthly trends |
+| ID | Feature | Status | Endpoint | Implementation |
+|---|---|---|---|---|
+| AI-001 | Skill scoring algorithm | ✅ | `GET /api/v1/intelligence/skill-score/{child_id}` | Pure algorithm — weighted composite score, trend, skill level |
+| AI-002 | Auto-tagging therapy targets | ✅ | `POST /api/v1/intelligence/auto-tag/{session_id}` | Claude Haiku — extracts tags from observation text |
+| AI-003 | Therapist-child matching | ✅ | `GET /api/v1/intelligence/match-therapist/{child_id}` | Pure algorithm — specialization + experience + rating score |
+| AI-004 | Narrative report generator | ✅ | `GET /api/v1/intelligence/generate-report/{child_id}?period=weekly\|monthly` | Claude Haiku — 3-paragraph narrative; template fallback if no key |
+
+### Architecture
+
+```
+backend/
+├── app/services/intelligence.py      ✅  All 4 AI functions
+│   ├── compute_skill_score()          AI-001: weighted 5-dim score, trend, level
+│   ├── match_therapists()             AI-003: spec/exp/rating/volume scoring
+│   ├── auto_tag_observations()        AI-002: Claude Haiku async call
+│   └── generate_narrative_report()    AI-004: Claude Haiku + template fallback
+├── app/schemas/intelligence.py        ✅  Pydantic response models
+├── app/api/v1/intelligence.py         ✅  FastAPI router (4 endpoints)
+└── tests/test_intelligence.py         ✅  13 tests — all passing
+```
+
+### AI-001 — Skill Scoring Detail
+
+```
+Dimension weights:
+  progress_score      × 1.50  (most important)
+  attention_score     × 1.00
+  participation_score × 1.00
+  mood_score          × 0.75
+  behavior_score      × 0.75
+
+Skill levels: Emerging (<2.0) | Developing (2–3) | Proficient (3–4) | Advanced (≥4)
+Trend:        first-half avg vs second-half avg → improving/stable/declining (±0.25 threshold)
+```
+
+### AI-003 — Matching Score Breakdown
+
+```
+Specialization keyword overlap with diagnosis    0–50 pts
+Years of experience (2 pts/year, cap 20)         0–20 pts
+Rating (rating/5 × 20)                           0–20 pts
+Session volume (1 pt per 10 sessions, cap 10)    0–10 pts
+                                          Total: 0–100 pts
+```
+
+### Claude API Setup (required for AI-002 + AI-004)
+
+```
+1. Get API key: https://console.anthropic.com/
+2. Add to backend/.env:  ANTHROPIC_API_KEY=sk-ant-...
+3. Add to Render env vars as well
+4. Without key: auto-tag returns [] and report uses template — app still works
+```
+
+### Intelligence Tests — 13/13 passing
+
+```
+test_skill_score_no_data              ✅
+test_skill_score_with_notes           ✅
+test_skill_score_level_boundaries     ✅
+test_skill_score_unknown_child        ✅
+test_match_therapist_returns_list     ✅
+test_match_therapist_with_profile     ✅
+test_match_therapist_unknown_child    ✅
+test_auto_tag_no_api_key_returns_empty ✅  (graceful degradation)
+test_auto_tag_no_notes_returns_404    ✅
+test_generate_report_weekly           ✅
+test_generate_report_monthly          ✅
+test_generate_report_unknown_child    ✅
+test_intelligence_requires_auth       ✅
+```
 
 ---
 
