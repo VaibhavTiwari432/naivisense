@@ -1,16 +1,17 @@
 # NaiviSense Development Tracker
 
-**Last Updated:** April 25, 2026 — Testing Complete ✅  
-**Overall Progress:** 95% Complete  
+**Last Updated:** April 25, 2026 — Industry Standards Applied ✅  
+**Overall Progress:** 97% Complete  
 **Backend:** Running on http://localhost:8000 (SQLite dev / PostgreSQL prod)  
-**Flutter:** ✅ Zero analysis issues — 20 widget tests passing
+**Flutter:** ✅ Zero analysis issues — 20 widget tests passing  
+**Backend Tests:** ✅ 36/36 passing
 
 ---
 
 ## Visual Progress
 
 ```
-OVERALL:  [███████████████████░] 95%
+OVERALL:  [███████████████████░] 97%
 
 Phase 1: Foundation         [████████████████████] 100% ✅
 Phase 2: Frontend UI        [████████████████████] 100% ✅
@@ -19,7 +20,8 @@ Phase 4: API Development    [█████████████████
 Phase 5: Integration        [████████████████████] 100% ✅
 Phase 6: Intelligence (AI)  [░░░░░░░░░░░░░░░░░░░░]   0% ⏸️ (post-MVP)
 Phase 7: Testing            [████████████████████] 100% ✅
-Phase 8: Deployment         [████████████████░░░░]  80% ← IN PROGRESS
+Phase 8: Deployment         [█████████████████░░░]  85% ← IN PROGRESS
+Phase 9: Industry Standards [████████████████████] 100% ✅ NEW
 ```
 
 ---
@@ -27,29 +29,74 @@ Phase 8: Deployment         [████████████████░
 ## 👉 Current Task Pointer
 
 ```
-NEXT: DEPLOY-001 → DEPLOY-002
-  1. Restart backend:  cd backend && venv\Scripts\uvicorn app.main:app --reload --port 8000
-  2. Run Flutter E2E:  cd naivisense && flutter run -d chrome
-  3. Test: Register (therapist) → Login → Add Child → verify child in list
-  4. Create PostgreSQL DB on Render → set DATABASE_URL in env → deploy
-  5. Update Flutter AppConstants.apiBaseUrl → prod URL
-  6. Build Android APK:  flutter build apk --release
+NEXT: DEPLOY-001 → DEPLOY-004
+  1. Push to GitHub:
+       git remote add origin https://github.com/YOUR_USERNAME/naivisense.git
+       git push -u origin main
+     → CI will auto-run on push (GitHub Actions)
+
+  2. Deploy backend to Render:
+       - New Web Service → connect repo → Root Directory: backend
+       - Build: pip install -r requirements.txt
+       - Start: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+       - Add env vars: SECRET_KEY (generate), ALGORITHM=HS256,
+         ACCESS_TOKEN_EXPIRE_MINUTES=60, ENVIRONMENT=production
+       - Add CORS_ORIGINS=<your flutter web domain> (or * for beta)
+       - Add PostgreSQL addon → auto-sets DATABASE_URL
+       - Deploy → Alembic runs migrations automatically
+
+  3. Update Flutter apiBaseUrl:
+       In AppConstants.apiBaseUrl default value → prod Render URL
+       OR build with: flutter build apk --dart-define=API_BASE_URL=<url>
+
+  4. Build Android APK (BLOCKED — needs Java 11+):
+       ⚠️  Only Java 8 found. Install Java 17 (Temurin):
+           https://adoptium.net/temurin/releases/?version=17
+       ✅  After install, accept Android licenses:
+           flutter doctor --android-licenses
+       ✅  Then install Android cmdline-tools via Android Studio SDK Manager
+       ✅  Then build:
+           flutter build apk --release
+           flutter build apk --dart-define=API_BASE_URL=<prod-url> --release
 ```
 
 ---
 
-## Phase 5 — Integration Status ✅ COMPLETE
+## Phase 9 — Industry Standards ✅ COMPLETE (April 25, 2026)
 
-All 33 integration tasks done. See full list in previous tracker entries.
+| # | Standard | Fix | Files Changed |
+|---|---|---|---|
+| STD-001 | Android INTERNET permission | Added `<uses-permission android:name="android.permission.INTERNET"/>` | AndroidManifest.xml |
+| STD-002 | CORS config-driven | `CORS_ORIGINS` env var; `"*"` default for dev, restrict in prod | config.py, main.py, .env.example |
+| STD-003 | Structured logging | `logging.basicConfig` with timestamp + level + name format; `LOG_LEVEL` from env | main.py, config.py |
+| STD-004 | HTTP 201 for creates | All 7 POST create endpoints return 201 (register, child, session, notes, feedback, task, therapist profile) | api/v1/*.py, all test files |
+| STD-005 | Rate limiting | `slowapi` — 5/min on login, 10/min on register; disabled in `ENVIRONMENT=testing` | core/limiter.py, auth.py, main.py |
+| STD-006 | Deprecation cleanup | Replace `datetime.utcnow()` → `datetime.now(timezone.utc)` everywhere | session.py, tasks.py, test files |
+| STD-007 | CI/CD | GitHub Actions `.github/workflows/ci.yml` — pytest + flutter analyze + flutter test on every push/PR | .github/workflows/ci.yml |
+| STD-008 | Git hygiene | `android/build/` excluded from git; `.claude/` excluded | .gitignore |
 
-**Bug fixes applied (April 25, 2026):**
-| Bug | Fix | File |
-|---|---|---|
-| `get_children_by_therapist` returned empty when therapist created children | Added `OR parent_id = therapist_id` to query | backend/app/crud/child.py |
-| `child_id: UUID` in schemas caused SQLite binding error | Changed input schema `child_id` to `str` | schemas/feedback.py, session.py, task.py |
-| Flutter analyzer warnings (unnecessary type checks/casts) | Cleaned up cast expressions | features/reports/providers/progress_report_provider.dart |
+---
 
-⚠️ **Backend restart required** to pick up the `child_id` schema fix and child-list fix.
+## Phase 8 — Deployment (85%)
+
+| ID | Task | Status | Notes |
+|---|---|---|---|
+| DEPLOY-001 | Push to GitHub | 🔴 TODO | `git remote add origin <url> && git push` — 2 commits ready |
+| DEPLOY-002 | Deploy backend to Render | 🔴 TODO | `render.yaml` ready; needs GitHub push first |
+| DEPLOY-003 | Update Flutter apiBaseUrl → prod URL | 🔴 TODO | Use `--dart-define=API_BASE_URL=<url>` at build time |
+| DEPLOY-004 | Build & sign Android APK | 🚫 BLOCKED | Needs Java 17 — see task pointer above |
+| DEPLOY-005 | Beta testing with real users | ⏸️ | After APK is distributed |
+
+### Render Env Vars Checklist
+```
+DATABASE_URL        → auto-set by PostgreSQL addon
+SECRET_KEY          → generate: python -c "import secrets; print(secrets.token_hex(32))"
+ALGORITHM           → HS256
+ACCESS_TOKEN_EXPIRE_MINUTES → 60
+ENVIRONMENT         → production
+CORS_ORIGINS        → * (for beta) or https://your-domain.com
+LOG_LEVEL           → INFO
+```
 
 ---
 
@@ -60,10 +107,11 @@ All 33 integration tasks done. See full list in previous tracker entries.
 ```
 backend/tests/
 ├── conftest.py              ✅  Session-scoped client, fixtures, in-memory SQLite
-├── test_auth.py             ✅  9 tests: register, login, /me, token role check
-├── test_children.py         ✅  8 tests: create, list (therapist & parent), get, update
-├── test_sessions.py         ✅  8 tests: create, list, upcoming, complete, notes CRUD
-├── test_feedback.py         ✅  5 tests: submit, duplicate-today guard, history, auth
+│                                 Sets ENVIRONMENT=testing to disable rate limiter
+├── test_auth.py             ✅  9 tests: register(201), login, /me, token role check
+├── test_children.py         ✅  8 tests: create(201), list (therapist & parent), get, update
+├── test_sessions.py         ✅  8 tests: create(201), list, upcoming, complete, notes(201)
+├── test_feedback.py         ✅  5 tests: submit(201), duplicate-today guard, history, auth
 └── test_reports.py          ✅  6 tests: progress report (empty + with data), tasks CRUD
 
 Run:  cd backend && venv\Scripts\pytest tests/ -v
@@ -81,63 +129,32 @@ Run:  cd naivisense && flutter test
 
 ---
 
-## Phase 8 — Deployment (80%)
-
-| ID | Task | Status | Notes |
-|---|---|---|---|
-| DEPLOY-001 | Migrate backend DB to PostgreSQL | 🔴 TODO | Alembic migration `0001_initial_schema.py` ready |
-| DEPLOY-002 | Deploy backend to Render | 🔴 TODO | `render.yaml` ready — needs DB connection string |
-| DEPLOY-003 | Update Flutter apiBaseUrl → prod URL | 🔴 TODO | Edit `AppConstants.apiBaseUrl` |
-| DEPLOY-004 | Build & sign Android APK | 🔴 TODO | `flutter build apk --release` |
-| DEPLOY-005 | Beta testing with real users | ⏸️ | After APK is distributed |
-
-### Deployment Files Created
-
-```
-backend/
-├── render.yaml              ✅  Render service + free PostgreSQL DB config
-├── .env.example             ✅  Updated with SQLite default + prod PostgreSQL comment
-├── alembic/versions/
-│   └── 0001_initial_schema.py  ✅  Full schema migration (all 7 tables + indexes)
-└── requirements.txt         ✅  pytest + httpx added for CI
-```
-
-### Deploy Steps (Render)
-
-1. Push backend code to GitHub
-2. Create Render web service → connect repo → set root to `/backend`
-3. Build: `pip install -r requirements.txt`
-4. Start: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-5. Add PostgreSQL addon → copy DATABASE_URL to env vars
-6. Add `SECRET_KEY` (generate with `python -c "import secrets; print(secrets.token_hex(32))"`)
-7. Deploy → Alembic auto-runs migrations on startup
-
----
-
 ## Backend — Fully Complete ✅
 
 ```
 backend/
-├── app/main.py              ✅  FastAPI + lifespan (SQLite: create_all, PostgreSQL: alembic)
-├── app/core/config.py       ✅  Pydantic settings from .env
+├── app/main.py              ✅  FastAPI + lifespan + slowapi rate limiter + structured logging
+├── app/core/config.py       ✅  Pydantic settings — CORS_ORIGINS, LOG_LEVEL added
 ├── app/core/database.py     ✅  SQLite engine (check_same_thread=False)
 ├── app/core/security.py     ✅  bcrypt hashing + JWT creation
-├── app/models/              ✅  All 8 models (user, therapist, child, session, notes, feedback, task, alert)
-├── app/schemas/             ✅  Pydantic v2 request/response models (UUID input fields → str)
-├── app/crud/                ✅  DB operations (child list fixed for therapist-created children)
+├── app/core/limiter.py      ✅  slowapi Limiter (disabled in ENVIRONMENT=testing)
+├── app/models/              ✅  All 8 models
+├── app/schemas/             ✅  Pydantic v2 (UUID input fields → str)
+├── app/crud/                ✅  DB operations (child list fixed, feedback_date default fixed)
 ├── app/api/deps.py          ✅  get_current_user JWT middleware
-└── app/api/v1/              ✅  auth, therapist, children, sessions, feedback, tasks, reports
+└── app/api/v1/              ✅  auth(rate-limited), therapist, children, sessions, feedback, tasks, reports
 ```
 
-**Verified endpoints:**
-- POST /api/v1/auth/register → returns JWT + user ✅
-- POST /api/v1/auth/login → returns JWT + user ✅
-- GET  /api/v1/auth/me (Bearer token) → returns user ✅
-- POST /api/v1/children/ → creates child ✅
-- GET  /api/v1/children/ → lists children (restart backend to apply fix) ✅
-- POST /api/v1/sessions/ → creates session ✅
-- POST /api/v1/feedback/daily → submits feedback ✅
-- GET  /api/v1/reports/progress/{child_id} → progress report ✅
+**All endpoints return correct status codes:**
+- POST /api/v1/auth/register → 201 + JWT ✅
+- POST /api/v1/auth/login → 200 + JWT ✅
+- GET  /api/v1/auth/me → 200 ✅
+- POST /api/v1/children/ → 201 ✅
+- GET  /api/v1/children/ → 200 (therapist sees own + created; parent sees own) ✅
+- POST /api/v1/sessions/ → 201 ✅
+- POST /api/v1/sessions/{id}/notes → 201 ✅
+- POST /api/v1/feedback/daily → 201 ✅
+- GET  /api/v1/reports/progress/{child_id} → 200 ✅
 
 ---
 
@@ -145,7 +162,7 @@ backend/
 
 ```
 naivisense/lib/
-├── core/constants/app_constants.dart     ✅  apiBaseUrl = localhost:8000/api/v1
+├── core/constants/app_constants.dart     ✅  apiBaseUrl via String.fromEnvironment
 ├── data/repositories/                    ✅  All 5 repos wired to backend
 ├── data/services/                        ✅  Dio + secure storage + error handler
 ├── routing/app_router.dart               ✅  Auth guard + role routing
@@ -162,14 +179,30 @@ flutter analyze: No issues found ✅
 flutter test:    20/20 passed ✅
 ```
 
+**Android:**
+- `<uses-permission android:name="android.permission.INTERNET"/>` added ✅
+- APK build blocked by Java 8 (needs Java 17) ⚠️
+
+---
+
+## CI/CD — GitHub Actions ✅
+
+```
+.github/workflows/ci.yml
+  ├── backend job: Python 3.12 → pip install → pytest -v
+  └── flutter job: Flutter 3.x stable → pub get → analyze → test
+
+Triggers: push to main, pull_request to main
+```
+
 ---
 
 ## MVP Checklist
 
 ```
 Core flows:
-[ ] Therapist registers + logs in         ← API verified, run Flutter to confirm UI
-[ ] Therapist creates child profile       ← API verified, run Flutter to confirm UI
+[ ] Therapist registers + logs in         ← API verified, need Flutter E2E confirm
+[ ] Therapist creates child profile       ← API verified, need Flutter E2E confirm
 [ ] Therapist schedules/views sessions    ← API verified
 [ ] Therapist submits session notes       ← API verified
 [ ] Parent logs in and sees child's next session
@@ -178,13 +211,16 @@ Core flows:
 
 Infrastructure:
 [✅] Backend running (local SQLite)
-[✅] All API endpoints verified via pytest (36 tests)
+[✅] All API endpoints verified via pytest (36 tests, 201/200 correct)
 [✅] Flutter widget tests (20 tests)
 [✅] Alembic migration ready for PostgreSQL
 [✅] Render deployment config (render.yaml)
+[✅] GitHub Actions CI (auto-runs tests on push)
+[✅] Rate limiting on auth (5/min login, 10/min register)
+[✅] Android INTERNET permission
 [ ] Backend running (production PostgreSQL)
 [ ] Flutter connected to prod backend
-[ ] Android APK builds
+[ ] Android APK builds (blocked: install Java 17 first)
 ```
 
 ---
@@ -213,13 +249,18 @@ Infrastructure:
 | Python bcrypt | 4.0.1 pinned | passlib 1.7.4 incompatible with newer |
 | Schema ID fields | `str` (not `UUID`) | SQLite can't bind uuid.UUID objects |
 | Startup migrations | Alembic for PostgreSQL, create_all for SQLite | Avoids alembic on dev |
+| Rate limiting | slowapi 0.1.9 | Lightweight, FastAPI-native |
+| CORS origins | Env var `CORS_ORIGINS` | Restrict in prod without code change |
+| HTTP status codes | 201 for creates, 200 for reads/updates | REST standard |
+| CI/CD | GitHub Actions | Free, runs on every push |
 
 ## Known Design Notes
 
 - `child.parent_id` is the user who registered the child (may be a therapist in admin flow). `child.therapist_id` is the treating therapist. `get_children_by_therapist` queries both with OR.
 - Tasks endpoint filters by `assigned_by == current_user.id` — therapist sees only tasks they assigned. Acceptable for MVP.
 - Two `tasksForChildProvider` names: mock in `auth_provider.dart`, real API in `progress_report_provider.dart`. `child_profile_screen.dart` imports the real one. Clean up mock post-MVP.
+- Rate limiter uses IP-based keys. Behind a reverse proxy (Render), ensure `X-Forwarded-For` is passed correctly or switch to user-ID keying post-MVP.
 
 ---
 
-*Last updated: April 25, 2026 — Phase 7 Testing complete (56 total tests), Phase 8 deployment 80% done*
+*Last updated: April 25, 2026 — Phase 9 (Industry Standards) complete. 2 git commits ready to push.*
