@@ -35,6 +35,7 @@ class AppConstants {
   static String progressReportEndpoint(String childId) =>
       '/reports/progress/$childId';
   static String taskEndpoint(String taskId) => '/tasks/$taskId';
+  static const String adminCreateUserEndpoint = '/admin/create-user';
 
   // Secure storage keys
   static const String tokenKey = 'naivisense_auth_token';

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../shared/models/therapist.dart';
+import '../../../data/services/api_service.dart';
+import '../../../shared/models/api/auth_requests.dart';
 import '../../../shared/widgets/app_button.dart';
 import '../../../shared/widgets/app_card.dart';
 import '../../../shared/widgets/app_widgets.dart';
@@ -165,10 +167,13 @@ class AddTherapistScreen extends ConsumerStatefulWidget {
 class _AddTherapistScreenState extends ConsumerState<AddTherapistScreen> {
   final _name = TextEditingController();
   final _phone = TextEditingController();
+  final _password = TextEditingController();
   final _email = TextEditingController();
   final _city = TextEditingController();
   String _specialization = 'Speech Therapy';
   int _experience = 3;
+  bool _saving = false;
+  bool _obscure = true;
 
   static const _specializations = [
     'Speech Therapy',
@@ -180,33 +185,49 @@ class _AddTherapistScreenState extends ConsumerState<AddTherapistScreen> {
 
   @override
   void dispose() {
-    for (final c in [_name, _phone, _email, _city]) {
+    for (final c in [_name, _phone, _password, _email, _city]) {
       c.dispose();
     }
     super.dispose();
   }
 
-  void _save() {
-    if (_name.text.isEmpty || _phone.text.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Fill name and phone')));
+  Future<void> _save() async {
+    if (_name.text.isEmpty || _phone.text.isEmpty || _password.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Fill name, phone and password')));
       return;
     }
-    final t = Therapist(
-      id: 't${DateTime.now().millisecondsSinceEpoch}',
-      fullName: _name.text.trim(),
-      phone: _phone.text.trim(),
-      email: _email.text.trim(),
-      specialization: _specialization,
-      yearsExperience: _experience,
-      city: _city.text.trim(),
-      avatarEmoji: '🧑‍⚕️',
-    );
-    ref.read(therapistsListProvider.notifier).add(t);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${t.fullName} added')),
-    );
-    context.pop();
+    if (_password.text.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Password must be at least 6 characters')));
+      return;
+    }
+    setState(() => _saving = true);
+    try {
+      final api = ref.read(apiServiceProvider);
+      await api.post<Map<String, dynamic>>(
+        AppConstants.adminCreateUserEndpoint,
+        data: RegisterRequest(
+          fullName: _name.text.trim(),
+          phone: _phone.text.trim(),
+          password: _password.text,
+          role: 'therapist',
+          email: _email.text.trim().isEmpty ? null : _email.text.trim(),
+        ).toJson(),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${_name.text.trim()} added — phone: ${_phone.text.trim()}')),
+      );
+      context.pop();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   @override
@@ -221,6 +242,34 @@ class _AddTherapistScreenState extends ConsumerState<AddTherapistScreen> {
             _field('Full Name', _name, 'Dr. Name'),
             _field('Phone', _phone, '+91 98765 43210',
                 keyboardType: TextInputType.phone),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Password',
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 6),
+                  TextField(
+                    controller: _password,
+                    obscureText: _obscure,
+                    decoration: InputDecoration(
+                      hintText: 'Min 6 characters',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscure
+                              ? Icons.visibility_off_rounded
+                              : Icons.visibility_rounded,
+                          size: 20,
+                          color: AppColors.textSecondary,
+                        ),
+                        onPressed: () => setState(() => _obscure = !_obscure),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             _field('Email', _email, 'name@clinic.in',
                 keyboardType: TextInputType.emailAddress),
             _field('City', _city, 'Rajkot'),
@@ -252,7 +301,11 @@ class _AddTherapistScreenState extends ConsumerState<AddTherapistScreen> {
               onChanged: (v) => setState(() => _experience = v.toInt()),
             ),
             const SizedBox(height: 20),
-            AppButton(label: 'Save Therapist', onPressed: _save),
+            AppButton(
+              label: 'Save Therapist',
+              loading: _saving,
+              onPressed: _save,
+            ),
           ],
         ),
       ),

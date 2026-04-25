@@ -189,7 +189,7 @@ class _AuthFormState extends ConsumerState<_AuthForm> {
   final _nameCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
-  bool _isRegister = false;
+  final bool _isRegister = false;
   bool _obscurePassword = true;
 
   @override
@@ -286,22 +286,8 @@ class _AuthFormState extends ConsumerState<_AuthForm> {
           ),
           const SizedBox(height: 20),
           AppButton(
-            label: _isRegister ? 'Create Account' : 'Login',
+            label: 'Login',
             onPressed: _submit,
-          ),
-          const SizedBox(height: 12),
-          TextButton(
-            onPressed: () => setState(() {
-              _isRegister = !_isRegister;
-              _formKey.currentState?.reset();
-            }),
-            child: Text(
-              _isRegister
-                  ? 'Already have an account? Login'
-                  : "Don't have an account? Register",
-              style: const TextStyle(
-                  color: AppColors.primaryBlue, fontSize: 13),
-            ),
           ),
           const SizedBox(height: 12),
           Row(
