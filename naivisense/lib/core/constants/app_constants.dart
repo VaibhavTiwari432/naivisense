@@ -8,7 +8,7 @@ class AppConstants {
   // API
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://localhost:8000/api/v1',
+    defaultValue: 'https://naivisense-api.onrender.com/api/v1',
   );
   static const int connectionTimeoutMs = 30000;
   static const int sendTimeoutMs = 30000;
