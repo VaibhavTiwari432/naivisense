@@ -1,0 +1,17 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Backend SQLite dev database
+backend/*.db
+backend/naivisense.db
+
+# Flutter build outputs
+naivisense/build/
+
+# Claude Code local settings
+.claude/

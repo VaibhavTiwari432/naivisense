@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter run *)",
+      "Bash(dir \"e:\\\\NaiviSense\")",
+      "Bash(flutter analyze *)",
+      "Bash(venv/Scripts/python.exe -c ' *)",
+      "Bash(where pg_ctl)",
+      "Bash(where psql *)",
+      "Bash(curl -s http://localhost:8000/)",
+      "Bash(curl -s -X POST http://localhost:8000/api/v1/auth/register -H 'Content-Type: application/json' -d '{\"name\":\"Test Parent\",\"phone\":\"9999999999\",\"password\":\"password123\",\"role\":\"parent\"}')",
+      "Bash(python -m json.tool)",
+      "Bash(curl -v -X POST http://localhost:8000/api/v1/auth/register -H 'Content-Type: application/json' -d '{\"name\":\"Test Parent\",\"phone\":\"9999999999\",\"password\":\"password123\",\"role\":\"parent\"}')",
+      "Bash(curl -s -X POST http://localhost:8000/api/v1/auth/register -H 'Content-Type: application/json' -d '{\"name\":\"Priya Singh\",\"phone\":\"8888888888\",\"password\":\"password123\",\"role\":\"parent\"}')",
+      "Bash(pkill -f \"uvicorn app.main\")",
+      "Bash(curl -s -X POST http://localhost:8000/api/v1/auth/login -H 'Content-Type: application/json' -d '{\"phone\":\"8888888888\",\"password\":\"password123\"}')",
+      "Bash(curl -s http://localhost:8000/health)",
+      "Bash(curl -s -X POST http://localhost:8000/api/v1/auth/register -H 'Content-Type: application/json' -d '{\"email\":\"e2etest@naivisense.com\",\"password\":\"Test@1234\",\"full_name\":\"E2E Therapist\",\"role\":\"therapist\"}')",
+      "Bash(curl -s -X POST http://localhost:8000/api/v1/auth/register -H 'Content-Type: application/json' -d '{\"name\":\"E2E Therapist\",\"phone\":\"03001234567\",\"password\":\"Test@1234\",\"role\":\"therapist\",\"email\":\"e2etest@naivisense.com\"}')",
+      "Bash(curl -s -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YmZkODA1Zi00ZmFjLTRkMWQtYWFjNC0wNjRlMjBhZmFiZjEiLCJyb2xlIjoidGhlcmFwaXN0IiwiZXhwIjoxNzc3MDg3NTI4fQ.53cu9J8gWP5hXrxEYOcxCebg9zlckzsUN8LpYyNh8jY' http://localhost:8000/api/v1/auth/me)",
+      "Bash(curl -s -X POST http://localhost:8000/api/v1/children/ -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YmZkODA1Zi00ZmFjLTRkMWQtYWFjNC0wNjRlMjBhZmFiZjEiLCJyb2xlIjoidGhlcmFwaXN0IiwiZXhwIjoxNzc3MDg3NTI4fQ.53cu9J8gWP5hXrxEYOcxCebg9zlckzsUN8LpYyNh8jY' -H 'Content-Type: application/json' -d '{\"name\":\"Test Child\",\"date_of_birth\":\"2018-06-15\",\"gender\":\"Male\",\"diagnosis\":\"ASD\",\"therapy_goals\":[\"Speech\",\"Focus\"],\"emergency_contact\":{\"severity\":\"Moderate\",\"mother_name\":\"Test Mom\",\"father_name\":\"Test Dad\",\"contact_number\":\"03001111111\",\"city\":\"Karachi\"}}')",
+      "Bash(curl -s -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YmZkODA1Zi00ZmFjLTRkMWQtYWFjNC0wNjRlMjBhZmFiZjEiLCJyb2xlIjoidGhlcmFwaXN0IiwiZXhwIjoxNzc3MDg3NTI4fQ.53cu9J8gWP5hXrxEYOcxCebg9zlckzsUN8LpYyNh8jY' http://localhost:8000/api/v1/children/)",
+      "Bash(curl -s -X POST http://localhost:8000/api/v1/auth/login -H 'Content-Type: application/json' -d '{\"phone\":\"03001234567\",\"password\":\"Test@1234\"}')",
+      "Bash(curl -s -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YmZkODA1Zi00ZmFjLTRkMWQtYWFjNC0wNjRlMjBhZmFiZjEiLCJyb2xlIjoidGhlcmFwaXN0IiwiZXhwIjoxNzc3MDg3ODE3fQ._nu5t_nyNe9KwlXpn9U1Spi2CpPIX3RiTfDczEYe3II' http://localhost:8000/api/v1/children/)",
+      "Bash(python -c ' *)",
+      "Bash(curl -s -H 'Authorization: Bearer __TRACKED_VAR__' http://localhost:8000/api/v1/children/)",
+      "Bash(e:/NaiviSense/backend/venv/Scripts/pip show *)",
+      "Bash(venv/Scripts/pytest tests/ -v)",
+      "Bash(flutter test *)",
+      "Bash(venv/Scripts/pytest tests/ -q)",
+      "Bash(venv/Scripts/uvicorn app.main:app --host 0.0.0.0 --port 8000)",
+      "Bash(git init *)",
+      "Bash(git add *)"
+    ]
+  }
+}
