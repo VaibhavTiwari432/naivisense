@@ -14,13 +14,31 @@ import '../features/reports/screens/report_screens.dart';
 import '../features/auth/providers/auth_provider.dart';
 import '../core/constants/app_constants.dart';
 
+// Wraps Riverpod auth state as a ChangeNotifier so GoRouter's
+// refreshListenable can re-run redirect without recreating the router.
+class _RouterNotifier extends ChangeNotifier {
+  _RouterNotifier(Ref ref) {
+    ref.listen<AuthState>(authProvider, (_, __) => notifyListeners());
+  }
+}
+
+final _routerNotifierProvider = Provider<_RouterNotifier>((ref) {
+  return _RouterNotifier(ref);
+});
+
 final goRouterProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authProvider);
+  final notifier = ref.watch(_routerNotifierProvider);
 
   return GoRouter(
     initialLocation: '/',
+    refreshListenable: notifier,
     redirect: (context, state) {
+      final authState = ref.read(authProvider);
       final path = state.uri.path;
+
+      // Wait for session restore before redirecting.
+      if (!authState.initialized) return null;
+
       final isLoggedIn = authState.user != null;
       final isOnAuth = path == '/' || path == '/role';
 
