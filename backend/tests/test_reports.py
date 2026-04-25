@@ -12,11 +12,11 @@ def test_progress_report_no_sessions(client, therapist_headers, child_id):
 
 
 def test_progress_report_with_sessions(client, therapist_headers, child_id):
-    from datetime import datetime, timedelta
+    from datetime import datetime, timedelta, timezone
 
     # Create and complete 2 sessions with notes
     for i in range(2):
-        sched = (datetime.utcnow() - timedelta(days=i + 1)).isoformat()
+        sched = (datetime.now(timezone.utc) - timedelta(days=i + 1)).isoformat()
         create = client.post("/api/v1/sessions/", json={
             "child_id": child_id,
             "scheduled_at": sched,

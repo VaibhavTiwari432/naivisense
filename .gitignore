@@ -10,8 +10,9 @@ Thumbs.db
 backend/*.db
 backend/naivisense.db
 
-# Flutter build outputs
+# Flutter/Android build outputs
 naivisense/build/
+naivisense/android/build/
 
 # Claude Code local settings
 .claude/

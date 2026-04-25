@@ -18,7 +18,7 @@ CHILD_PAYLOAD = {
 
 def test_create_child(client, therapist_headers):
     res = client.post("/api/v1/children/", json=CHILD_PAYLOAD, headers=therapist_headers)
-    assert res.status_code == 200
+    assert res.status_code == 201
     data = res.json()
     assert data["name"] == "Aarav Khan"
     assert "id" in data

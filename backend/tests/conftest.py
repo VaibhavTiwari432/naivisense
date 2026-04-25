@@ -1,3 +1,6 @@
+import os
+os.environ["ENVIRONMENT"] = "testing"  # disable rate limiter before app is imported
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -100,5 +103,5 @@ def child_id(client, therapist_headers):
             "city": "Karachi",
         },
     }, headers=therapist_headers)
-    assert res.status_code == 200
+    assert res.status_code == 201
     return res.json()["id"]

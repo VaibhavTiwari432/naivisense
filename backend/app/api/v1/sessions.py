@@ -19,7 +19,7 @@ async def upcoming_sessions(current_user=Depends(get_current_user), db: DBSessio
     return crud_session.get_upcoming_sessions(db, current_user.id)
 
 
-@router.post("/", response_model=SessionResponse)
+@router.post("/", response_model=SessionResponse, status_code=201)
 async def create_session(
     data: SessionCreate,
     current_user=Depends(get_current_user),
@@ -40,7 +40,7 @@ async def complete_session(
     return session
 
 
-@router.post("/{session_id}/notes", response_model=SessionNotesResponse)
+@router.post("/{session_id}/notes", response_model=SessionNotesResponse, status_code=201)
 async def add_session_notes(
     session_id: str,
     data: SessionNotesCreate,

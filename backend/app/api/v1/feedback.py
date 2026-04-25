@@ -9,7 +9,7 @@ from app.api.deps import get_current_user
 router = APIRouter()
 
 
-@router.post("/daily", response_model=FeedbackResponse)
+@router.post("/daily", response_model=FeedbackResponse, status_code=201)
 async def submit_feedback(
     data: FeedbackCreate,
     current_user=Depends(get_current_user),

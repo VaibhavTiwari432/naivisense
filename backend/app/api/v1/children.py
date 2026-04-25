@@ -18,7 +18,7 @@ async def list_children(current_user=Depends(get_current_user), db: Session = De
     return []
 
 
-@router.post("/", response_model=ChildResponse)
+@router.post("/", response_model=ChildResponse, status_code=201)
 async def create_child(
     data: ChildCreate,
     current_user=Depends(get_current_user),

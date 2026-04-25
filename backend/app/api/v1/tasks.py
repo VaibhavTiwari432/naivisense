@@ -5,7 +5,7 @@ from app.core.database import get_db
 from app.models.task import Task, TaskStatus
 from app.schemas.task import TaskCreate, TaskUpdate, TaskResponse
 from app.api.deps import get_current_user
-from datetime import datetime
+from datetime import datetime, timezone
 
 router = APIRouter()
 
@@ -22,7 +22,7 @@ async def list_tasks(
     return query.all()
 
 
-@router.post("/", response_model=TaskResponse)
+@router.post("/", response_model=TaskResponse, status_code=201)
 async def create_task(
     data: TaskCreate,
     current_user=Depends(get_current_user),
@@ -48,7 +48,7 @@ async def update_task(
     for field, value in data.model_dump(exclude_unset=True).items():
         setattr(task, field, value)
     if data.status == TaskStatus.COMPLETED:
-        task.completed_at = datetime.utcnow()
+        task.completed_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(task)
     return task

@@ -1,9 +1,19 @@
+import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from app.core.limiter import limiter
 from app.api.v1 import auth, therapist, children, sessions, feedback, tasks, reports
 from app.core.config import settings
 from app.core.database import Base, engine
+
+logging.basicConfig(
+    level=getattr(logging, settings.LOG_LEVEL.upper(), logging.INFO),
+    format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
+)
+logger = logging.getLogger(__name__)
 
 
 def _run_migrations():
@@ -18,9 +28,12 @@ def _run_migrations():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     if settings.DATABASE_URL.startswith('postgresql'):
+        logger.info("PostgreSQL detected — running Alembic migrations")
         _run_migrations()
     else:
+        logger.info("SQLite detected — running create_all")
         Base.metadata.create_all(bind=engine)
+    logger.info("NaiviSense API started (env=%s)", settings.ENVIRONMENT)
     yield
 
 
@@ -30,10 +43,12 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

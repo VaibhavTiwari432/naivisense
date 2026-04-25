@@ -16,7 +16,7 @@ async def get_profile(current_user=Depends(get_current_user), db: Session = Depe
     return profile
 
 
-@router.post("/profile", response_model=TherapistProfileResponse)
+@router.post("/profile", response_model=TherapistProfileResponse, status_code=201)
 async def create_profile(
     data: TherapistProfileCreate,
     current_user=Depends(get_current_user),

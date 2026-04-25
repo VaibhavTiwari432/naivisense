@@ -30,7 +30,25 @@
       "Bash(venv/Scripts/pytest tests/ -q)",
       "Bash(venv/Scripts/uvicorn app.main:app --host 0.0.0.0 --port 8000)",
       "Bash(git init *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git rm *)",
+      "Bash(git reset *)",
+      "Bash(git restore *)",
+      "Bash(git config *)",
+      "Bash(git commit -m ' *)",
+      "Bash(gh auth *)",
+      "Bash(venv/Scripts/pip install *)",
+      "Bash(venv/Scripts/python -c \"import slowapi; print\\('slowapi', slowapi.__version__\\)\")",
+      "Bash(venv/Scripts/python -c \"from slowapi import Limiter; print\\('slowapi OK'\\)\")",
+      "Bash(venv/Scripts/pip show *)",
+      "Bash(flutter build *)",
+      "Bash(java -version)",
+      "Read(//c/Program Files/Java//**)",
+      "Read(//c/Program Files/**)",
+      "Bash(flutter doctor *)",
+      "Bash(flutter sdk-path *)",
+      "Bash(ls \"$\\(flutter sdk-path \\)/bin/cache/artifacts/engine\")",
+      "Bash(flutter --version)"
     ]
   }
 }

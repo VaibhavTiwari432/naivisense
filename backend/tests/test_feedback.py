@@ -13,7 +13,7 @@ def test_submit_feedback(client, parent_headers, child_id):
         "home_practice_done": True,
         "notes": "Had a great day, practiced well.",
     }, headers=parent_headers)
-    assert res.status_code == 200
+    assert res.status_code == 201
     data = res.json()
     assert data["sleep_score"] == 5
     assert data["notes"] == "Had a great day, practiced well."

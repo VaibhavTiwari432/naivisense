@@ -1,9 +1,9 @@
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 
 def _future(days=1):
-    return (datetime.utcnow() + timedelta(days=days)).isoformat()
+    return (datetime.now(timezone.utc) + timedelta(days=days)).isoformat()
 
 
 def test_create_session(client, therapist_headers, child_id):
@@ -13,7 +13,7 @@ def test_create_session(client, therapist_headers, child_id):
         "session_type": "Speech Therapy",
         "duration_minutes": 45,
     }, headers=therapist_headers)
-    assert res.status_code == 200
+    assert res.status_code == 201
     data = res.json()
     assert data["child_id"] == child_id
     assert data["status"] in ("scheduled", "upcoming")
@@ -71,7 +71,7 @@ def test_add_session_notes(client, therapist_headers, child_id):
         "goals_worked_on": ["Eye contact", "Verbal responses"],
         "next_session_plan": "Focus on two-word phrases.",
     }, headers=therapist_headers)
-    assert res.status_code == 200
+    assert res.status_code == 201
     data = res.json()
     assert data["attention_score"] == 4
     assert data["observations"] == "Good session today."

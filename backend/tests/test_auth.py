@@ -8,7 +8,7 @@ def test_register_therapist(client):
         "password": "Password123",
         "role": "therapist",
     })
-    assert res.status_code == 200
+    assert res.status_code == 201
     data = res.json()
     assert "access_token" in data
     assert data["user"]["name"] == "New Therapist"
@@ -22,7 +22,7 @@ def test_register_parent(client):
         "password": "Password123",
         "role": "parent",
     })
-    assert res.status_code == 200
+    assert res.status_code == 201
     data = res.json()
     assert data["user"]["role"] == "parent"
 
