@@ -2,7 +2,6 @@ services:
   - type: web
     name: naivisense-api
     runtime: node
-    rootDir: backend-node
     buildCommand: npm install && npm run migrate && npm run seed
     startCommand: node src/server.js
     envVars:
